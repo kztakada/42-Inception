@@ -1,0 +1,12 @@
+SELECT 'Initializing database...' AS message;
+
+-- データベースの作成
+CREATE DATABASE IF NOT EXISTS `__PLACEHOLDER_DB__` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+-- ユーザーの作成と権限の付与
+CREATE USER IF NOT EXISTS '__PLACEHOLDER_USER__'@'%' IDENTIFIED BY '__PLACEHOLDER_PASSWORD__';
+GRANT ALL PRIVILEGES ON `__PLACEHOLDER_DB__`.* TO '__PLACEHOLDER_USER__'@'%';
+ALTER USER 'root'@'localhost' IDENTIFIED BY '__PLACEHOLDER_ROOT_PASSWORD__';
+-- 権限の変更を即時反映
+FLUSH PRIVILEGES;
+
+SELECT 'Database initialized.' AS message;

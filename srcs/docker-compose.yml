@@ -1,2 +1,46 @@
 
+services:
+  mariadb:
+    container_name: mariadb
+    build:
+      context: ./requirements/mariadb
+      dockerfile: Dockerfile
+    image: mariadb:ft_inception
+    env_file:
+      - .env
+    volumes:
+      - DB:/var/lib/mysql
+    expose:
+      - "3306"
+    networks:
+      - inception_net
+    restart: always
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 30s
+    secrets:
+      - db_root_password
+      - db_password
 
+volumes:
+  DB:
+    name: DB
+    driver: local
+    driver_opts:
+      type: none
+      device: ${HOME}/data/DB
+      o: bind
+
+networks:
+  inception_net:
+    name: inception_net
+    driver: bridge
+
+secrets:
+  db_root_password:
+    file: ../secrets/db_root_password.txt
+  db_password:
+    file: ../secrets/db_password.txt
