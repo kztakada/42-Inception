@@ -2,27 +2,31 @@
 
 set -e
 
-INIT_SQL_FILE="/etc/mysql/init.sql"
+if [ "$1" = 'mariadbd' ]; then
 
-DB_PASSWORD=$(cat /run/secrets/db_password)
-export DB_PASSWORD
+  INIT_SQL_BASE_FILE="/etc/mysql/init.sql"
+  INIT_SQL_FILE="/dev/shm/init.sql"
 
-DB_ROOT_PASSWORD=$(cat /run/secrets/db_root_password)
-export DB_ROOT_PASSWORD
+  DB_PASSWORD=$(cat /run/secrets/db_password)
 
-echo "INFO: Starting MariaDB initialization script"
+  DB_ROOT_PASSWORD=$(cat /run/secrets/db_root_password)
 
-if [ -f "$INIT_SQL_FILE" ]; then
-        sed \
-          -e "s/__PLACEHOLDER_DB__/${DB_DATABASE}/g" \
-          -e "s/__PLACEHOLDER_USER__/${DB_USER}/g" \
-          -e "s/__PLACEHOLDER_PASSWORD__/${DB_PASSWORD}/g" \
-          -e "s/__PLACEHOLDER_ROOT_PASSWORD__/${DB_ROOT_PASSWORD}/g" \
-          "$INIT_SQL_FILE" > temp && mv temp "$INIT_SQL_FILE"
+  echo "INFO: Starting MariaDB initialization script"
 
-        echo "INFO: Successfully executed initialization script"
-    else
-        echo "WARNING: $INIT_SQL_FILE not found. Skipping custom initialization."
-    fi
+  if [ -f "$INIT_SQL_BASE_FILE" ]; then
+          sed \
+            -e "s/__PLACEHOLDER_DB__/${DB_DATABASE}/g" \
+            -e "s/__PLACEHOLDER_USER__/${DB_USER}/g" \
+            -e "s/__PLACEHOLDER_PASSWORD__/${DB_PASSWORD}/g" \
+            -e "s/__PLACEHOLDER_ROOT_PASSWORD__/${DB_ROOT_PASSWORD}/g" \
+            "$INIT_SQL_BASE_FILE" > temp && mv temp "$INIT_SQL_FILE"
 
-exec mariadbd --init-file=/etc/mysql/init.sql
+          chmod 600 "$INIT_SQL_FILE"
+          chown mysql:mysql "$INIT_SQL_FILE"
+          echo "INFO: Successfully executed initialization script"
+      else
+          echo "WARNING: $INIT_SQL_FILE not found. Skipping custom initialization."
+  fi
+fi
+
+exec "$@"

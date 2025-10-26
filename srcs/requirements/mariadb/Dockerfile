@@ -14,3 +14,5 @@ COPY ./tools/init.sql /etc/mysql/init.sql
 RUN chmod +x /init_db.sh
 
 ENTRYPOINT [ "/init_db.sh" ]
+
+CMD ["mariadbd", "--init-file=/dev/shm/init.sql", "--user=mysql"]
