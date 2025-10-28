@@ -14,9 +14,9 @@ services:
       - "3306"
     networks:
       - inception_net
-    restart: always
+    restart: unless-stopped
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root -p$(cat /run/secrets/db_root_password)"]
       interval: 5s
       timeout: 3s
       retries: 5
@@ -25,6 +25,49 @@ services:
       - db_root_password
       - db_password
 
+  wordpress:
+    container_name: wordpress
+    build:
+      context: ./requirements/wordpress
+      dockerfile: Dockerfile
+    image: wordpress:ft_inception
+    env_file:
+      - .env
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    volumes:
+      - WordPress:/var/www/html
+    expose:
+      - "9000"
+    networks:
+      - inception_net
+    restart: unless-stopped
+    secrets:
+      - db_password
+      - wp_admin_password
+      - wp_editor_password
+
+  nginx:
+      container_name: nginx
+      build:
+        context: ./requirements/nginx
+        dockerfile: Dockerfile
+      image: nginx:ft_inception
+      ports:
+        - "443:443"
+      depends_on:
+        wordpress:
+          condition: service_started
+      volumes:
+        - WordPress:/var/www/html
+      networks:
+        - inception_net
+      restart: unless-stopped
+      secrets:
+        - inception_crt
+        - inception_key
+
 volumes:
   DB:
     name: DB
@@ -32,6 +75,13 @@ volumes:
     driver_opts:
       type: none
       device: ${HOME}/data/DB
+      o: bind
+  WordPress:
+    name: WordPress
+    driver: local
+    driver_opts:
+      type: none
+      device: ${HOME}/data/WordPress
       o: bind
 
 networks:
@@ -44,3 +94,11 @@ secrets:
     file: ../secrets/db_root_password.txt
   db_password:
     file: ../secrets/db_password.txt
+  wp_admin_password:
+    file: ../secrets/wp_admin_password.txt
+  wp_editor_password:
+    file: ../secrets/wp_editor_password.txt
+  inception_crt:
+    file: ../secrets/inception.crt
+  inception_key:
+    file: ../secrets/inception.key

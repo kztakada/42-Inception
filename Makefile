@@ -1,10 +1,12 @@
 D_COMPOSE_FILE = ./srcs/docker-compose.yml
 D_COMPOSE_CMD = docker compose -f $(D_COMPOSE_FILE)
+CREDENTIALS_SH = ./secrets/make_ssl_credentials.sh
 
 all: build
 
 build:
 	mkdir -p $(HOME)/data/DB $(HOME)/data/WordPress
+	chmod +x $(CREDENTIALS_SH) && $(CREDENTIALS_SH)
 	$(D_COMPOSE_CMD) up --build -d
 
 kill:
@@ -20,7 +22,7 @@ clean:
 	$(D_COMPOSE_CMD) down -v --rmi all --remove-orphans
 
 fclean: clean
-	rm -rf $(HOME)/data/
+	sudo rm -rf $(HOME)/data/
 
 sys_clean:
 	docker system prune -a --volumes -f
