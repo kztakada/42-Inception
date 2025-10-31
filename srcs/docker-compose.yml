@@ -5,7 +5,7 @@ services:
     build:
       context: ./requirements/mariadb
       dockerfile: Dockerfile
-    image: mariadb:ft_inception
+    image: mariadb:${D_IMAGE_TAG}
     env_file:
       - .env
     volumes:
@@ -13,7 +13,7 @@ services:
     expose:
       - "3306"
     networks:
-      - inception_net
+      - ${D_NETWORK_NAME}
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root -p$(cat /run/secrets/db_root_password)"]
@@ -23,14 +23,14 @@ services:
       start_period: 30s
     secrets:
       - db_root_password
-      - db_password
+      - db_user_password
 
   wordpress:
     container_name: wordpress
     build:
       context: ./requirements/wordpress
       dockerfile: Dockerfile
-    image: wordpress:ft_inception
+    image: wordpress:${D_IMAGE_TAG}
     env_file:
       - .env
     depends_on:
@@ -41,10 +41,10 @@ services:
     expose:
       - "9000"
     networks:
-      - inception_net
+      - ${D_NETWORK_NAME}
     restart: unless-stopped
     secrets:
-      - db_password
+      - db_user_password
       - wp_admin_password
       - wp_editor_password
 
@@ -53,7 +53,7 @@ services:
       build:
         context: ./requirements/nginx
         dockerfile: Dockerfile
-      image: nginx:ft_inception
+      image: nginx:${D_IMAGE_TAG}
       ports:
         - "443:443"
       depends_on:
@@ -62,7 +62,7 @@ services:
       volumes:
         - WordPress:/var/www/html
       networks:
-        - inception_net
+        - ${D_NETWORK_NAME}
       restart: unless-stopped
       secrets:
         - inception_crt
@@ -86,14 +86,15 @@ volumes:
 
 networks:
   inception_net:
-    name: inception_net
+    name: ${D_NETWORK_NAME}
     driver: bridge
 
+# *_password.txt must contain characters from base64 charset only
 secrets:
   db_root_password:
     file: ../secrets/db_root_password.txt
-  db_password:
-    file: ../secrets/db_password.txt
+  db_user_password:
+    file: ../secrets/db_user_password.txt
   wp_admin_password:
     file: ../secrets/wp_admin_password.txt
   wp_editor_password:

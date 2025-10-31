@@ -7,7 +7,7 @@ if [ "$1" = 'mariadbd' ]; then
   INIT_SQL_BASE_FILE="/etc/mysql/init.sql"
   INIT_SQL_FILE="/dev/shm/init.sql"
 
-  DB_PASSWORD=$(cat /run/secrets/db_password)
+  DB_USER_PASSWORD=$(cat /run/secrets/db_user_password)
 
   DB_ROOT_PASSWORD=$(cat /run/secrets/db_root_password)
 
@@ -15,10 +15,10 @@ if [ "$1" = 'mariadbd' ]; then
 
   if [ -f "$INIT_SQL_BASE_FILE" ]; then
           sed \
-            -e "s/__PLACEHOLDER_DB__/${DB_DATABASE}/g" \
-            -e "s/__PLACEHOLDER_USER__/${DB_USER}/g" \
-            -e "s/__PLACEHOLDER_PASSWORD__/${DB_PASSWORD}/g" \
-            -e "s/__PLACEHOLDER_ROOT_PASSWORD__/${DB_ROOT_PASSWORD}/g" \
+            -e "s|__PLACEHOLDER_DB__|${DB_DATABASE}|g" \
+            -e "s|__PLACEHOLDER_USER__|${DB_USER}|g" \
+            -e "s|__PLACEHOLDER_PASSWORD__|${DB_USER_PASSWORD}|g" \
+            -e "s|__PLACEHOLDER_ROOT_PASSWORD__|${DB_ROOT_PASSWORD}|g" \
             "$INIT_SQL_BASE_FILE" > temp && mv temp "$INIT_SQL_FILE"
 
           chmod 600 "$INIT_SQL_FILE"

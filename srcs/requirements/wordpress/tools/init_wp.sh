@@ -15,11 +15,11 @@ if [ ! -f /var/www/html/wp-config.php ]; then
     
     # wp-config.phpを環境変数に基づいて自動生成する
     echo "[+] Creating wp-config.php..."
-	DB_PASSWORD=$(cat /run/secrets/db_password)
+	DB_USER_PASSWORD=$(cat /run/secrets/db_user_password)
     wp config create \
         --dbname="$DB_DATABASE" \
         --dbuser="$DB_USER" \
-        --dbpass="$DB_PASSWORD" \
+        --dbpass="$DB_USER_PASSWORD" \
         --dbhost="$WP_DB_HOST" \
         --allow-root \
         --skip-check || { echo "[!] Config creation failed"; exit 1; }
