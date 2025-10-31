@@ -19,7 +19,10 @@ RUN apt-get install -y \
 RUN apt-get install -y \
 	php8.4-mbstring php8.4-xml php8.4-gd php8.4-curl \
 	php8.4-zip php8.4-intl php8.4-bcmath php8.4-exif \
+	php8.4-redis \
 	mariadb-client \
+	redis-tools \
+    netcat-openbsd \
 	&& apt-get clean \
 	&& rm -rf /var/lib/apt/lists/*
 
