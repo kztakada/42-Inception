@@ -72,6 +72,27 @@ services:
       - wp_editor_password
       - redis_password
 
+  vsftpd:
+    container_name: vsftpd
+    build:
+      context: ./requirements/bonus/vsftpd
+      dockerfile: Dockerfile
+    image: vsftpd:${D_IMAGE_TAG}
+    env_file:
+      - .env
+    depends_on:
+      - wordpress
+    volumes:
+      - WordPress:/var/www/html
+    ports:
+      - "21:21"
+      - "21000-21010:21000-21010"
+    networks:
+      - ${D_NETWORK_NAME}
+    restart: unless-stopped
+    secrets:
+      - vsftpd_password
+
   nginx:
       container_name: nginx
       build:
@@ -127,6 +148,8 @@ secrets:
     file: ../secrets/wp_editor_password.txt
   redis_password:
     file: ../secrets/redis_password.txt
+  vsftpd_password:
+    file: ../secrets/vsftpd_password.txt
   inception_crt:
     file: ../secrets/inception.crt
   inception_key:
