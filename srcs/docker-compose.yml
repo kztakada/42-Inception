@@ -93,6 +93,23 @@ services:
     secrets:
       - vsftpd_password
 
+  adminer:
+    container_name: adminer
+    build:
+      context: ./requirements/bonus/adminer
+      dockerfile: Dockerfile
+    image: adminer:${D_IMAGE_TAG}
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    volumes:
+      - adminer_data:/var/www/adminer
+    expose:
+      - "9001"
+    networks:
+      - ${D_NETWORK_NAME}
+    restart: unless-stopped
+
   nginx:
       container_name: nginx
       build:
@@ -104,8 +121,11 @@ services:
       depends_on:
         wordpress:
           condition: service_started
+        adminer:
+          condition: service_started
       volumes:
         - WordPress:/var/www/html
+        - adminer_data:/var/www/adminer
       networks:
         - ${D_NETWORK_NAME}
       restart: unless-stopped
@@ -129,6 +149,8 @@ volumes:
       device: ${HOME}/data/WordPress
       o: bind
   redis_data:
+    driver: local
+  adminer_data:
     driver: local
 
 networks:
