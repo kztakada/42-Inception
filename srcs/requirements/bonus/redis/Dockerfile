@@ -20,4 +20,4 @@ EXPOSE 6379
 
 ENTRYPOINT ["/init_redis.sh"]
 
-CMD ["redis-server", "/etc/redis/redis.conf"]
+CMD ["gosu", "redis", "redis-server", "/etc/redis/redis.conf"]
