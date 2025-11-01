@@ -110,6 +110,27 @@ services:
       - ${D_NETWORK_NAME}
     restart: unless-stopped
 
+  cadvisor:
+    container_name: cadvisor
+    build:
+      context: ./requirements/bonus/cadvisor
+      dockerfile: Dockerfile
+    image: cadvisor:${D_IMAGE_TAG}
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    expose:
+      - "8080"
+    networks:
+      - ${D_NETWORK_NAME}
+    restart: unless-stopped
+    privileged: true
+    devices:
+      - /dev/kmsg
+
   nginx:
       container_name: nginx
       build:
@@ -122,6 +143,8 @@ services:
         wordpress:
           condition: service_started
         adminer:
+          condition: service_started
+        cadvisor:
           condition: service_started
       volumes:
         - WordPress:/var/www/html
