@@ -7,7 +7,7 @@ INCEPTION_ENV = $(HOME)/Inception/.env
 all: build
 
 build: $(ENV_FILE)
-	mkdir -p $(HOME)/data/DB $(HOME)/data/WordPress
+	mkdir -p $(HOME)/data/DB $(HOME)/data/WordPress $(HOME)/data/backups
 	chmod +x $(MAKE_CREDENTIALS) && $(MAKE_CREDENTIALS)
 	$(D_COMPOSE_CMD) up --build -d
 
@@ -45,4 +45,20 @@ $(ENV_FILE):
 		exit 1; \
 	fi
 
-.PHONY: all build kill stop down clean fclean re sys_clean
+# 手動バックアップの実行
+backup:
+	docker exec backup /usr/local/bin/backup.sh
+
+# バックアップログの確認
+backup-logs:
+	docker exec backup sh -c 'ls -t /backup/logs/backup_*.log | head -1 | xargs tail -n 50'
+
+# バックアップ一覧の表示
+backup-list:
+	docker exec backup sh -c "ls -lh /backup/*/*"
+
+# 古いバックアップの削除
+backup-clean:
+	docker exec backup sh -c "find /backup -name "*.tar.gz" -type f -mtime +7 -delete"
+
+.PHONY: all build kill stop down clean fclean re sys_clean backup backup-logs backup-list backup-clean

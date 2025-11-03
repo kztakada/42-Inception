@@ -170,6 +170,27 @@ services:
         - inception_crt
         - inception_key
 
+  backup:
+    container_name: backup
+    build:
+      context: ./requirements/bonus/backup
+      dockerfile: Dockerfile
+    image: backup:${D_IMAGE_TAG}
+    env_file:
+      - .env
+    depends_on:
+      mariadb:
+        condition: service_healthy
+      wordpress:
+        condition: service_started
+    volumes:
+      - DB:/source/db:ro
+      - WordPress:/source/wordpress:ro
+      - backup_storage:/backup
+    networks:
+      - ${D_NETWORK_NAME}
+    restart: unless-stopped
+
 volumes:
   DB:
     name: DB
@@ -191,6 +212,13 @@ volumes:
     driver: local
   static_website:
     driver: local
+  backup_storage:
+    name: backup_storage
+    driver: local
+    driver_opts:
+      type: none
+      device: ${HOME}/data/backups
+      o: bind
 
 networks:
   inception_net:
