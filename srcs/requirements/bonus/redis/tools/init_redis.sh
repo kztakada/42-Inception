@@ -12,7 +12,7 @@ if [ -f /run/secrets/redis_password ]; then
     echo "[+] Setting up Redis authentication..."
         
     # 設定ファイルにパスワードを設定
-    sed -i "s/# requirepass PLACEHOLDER_PASSWORD/requirepass $REDIS_PASSWORD/" /etc/redis/redis.conf
+    sed -i "s|PLACEHOLDER_PASSWORD|$REDIS_PASSWORD|" /etc/redis/redis.conf
         
     unset REDIS_PASSWORD
 else
