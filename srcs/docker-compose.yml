@@ -131,6 +131,17 @@ services:
     devices:
       - /dev/kmsg
 
+  node:
+    container_name: node
+    build:
+      context: ./requirements/bonus/node
+      dockerfile: Dockerfile
+    image: node:${D_IMAGE_TAG}
+    volumes:
+      - static_website:/app/dist
+    networks:
+      - ${D_NETWORK_NAME}
+
   nginx:
       container_name: nginx
       build:
@@ -146,9 +157,12 @@ services:
           condition: service_started
         cadvisor:
           condition: service_started
+        node:
+          condition: service_started
       volumes:
         - WordPress:/var/www/html
         - adminer_data:/var/www/adminer
+        - static_website:/var/www/fruits:ro
       networks:
         - ${D_NETWORK_NAME}
       restart: unless-stopped
@@ -174,6 +188,8 @@ volumes:
   redis_data:
     driver: local
   adminer_data:
+    driver: local
+  static_website:
     driver: local
 
 networks:
