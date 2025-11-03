@@ -14,15 +14,6 @@ if [ -f /run/secrets/redis_password ]; then
     # 設定ファイルにパスワードを設定
     sed -i "s/# requirepass PLACEHOLDER_PASSWORD/requirepass $REDIS_PASSWORD/" /etc/redis/redis.conf
         
-    # セキュリティ設定を正しい形式で追記
-    cat >> /etc/redis/redis.conf << EOF
-
-# Security configurations
-rename-command DEBUG ""
-rename-command SHUTDOWN SHUTDOWN_REDIS
-rename-command FLUSHALL ""
-EOF
-        
     unset REDIS_PASSWORD
 else
     echo "[!] Warning: No Redis password found. Running without authentication."
