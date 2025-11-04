@@ -2,6 +2,12 @@
 
 set -e
 
+# PHP-FPMログファイルの権限を設定
+echo "[+] Setting up PHP-FPM log permissions..."
+touch /var/log/php8.4-fpm.log
+chown www-data:www-data /var/log/php8.4-fpm.log
+chmod 644 /var/log/php8.4-fpm.log
+
 chown -R www-data:www-data /var/www/html
 
 # Redis接続テスト関数

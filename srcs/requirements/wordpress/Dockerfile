@@ -2,7 +2,7 @@ FROM debian:bookworm
 
 # 基本パッケージのインストール
 RUN apt-get update && apt-get install -y \
-	curl wget gnupg2 lsb-release ca-certificates apt-transport-https \
+	curl wget gnupg2 lsb-release ca-certificates apt-transport-https gosu \
 	&& apt-get clean
 
 # PHP 8.4のリポジトリを追加
@@ -43,6 +43,8 @@ RUN mkdir -p /run/php
 COPY ./tools/init_wp.sh /init_wp.sh
 RUN chmod +x /init_wp.sh
 
+EXPOSE 9000
+
 ENTRYPOINT [ "/init_wp.sh" ]
 
-CMD ["php-fpm8.4", "-F"]
+CMD ["gosu", "www-data", "php-fpm8.4", "-F"]
