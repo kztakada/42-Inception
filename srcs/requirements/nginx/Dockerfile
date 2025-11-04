@@ -11,6 +11,8 @@ COPY ./tools/nginx.conf /etc/nginx/conf.d/default.conf
 
 RUN chmod +x /etc/nginx/init_nginx.sh
 
+EXPOSE 443
+
 ENTRYPOINT [ "/etc/nginx/init_nginx.sh" ]
 
 CMD ["nginx", "-g", "daemon off;"]
