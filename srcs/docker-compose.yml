@@ -92,6 +92,7 @@ services:
     restart: unless-stopped
     secrets:
       - vsftpd_password
+    stop_grace_period: 1s
 
   adminer:
     container_name: adminer
@@ -142,6 +143,25 @@ services:
     networks:
       - ${D_NETWORK_NAME}
 
+  portainer:
+    container_name: portainer
+    build:
+      context: ./requirements/bonus/portainer
+      dockerfile: Dockerfile
+    image: portainer:${D_IMAGE_TAG}
+    env_file:
+      - .env
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - portainer_data:/data
+    expose:
+      - "9443"
+    networks:
+      - ${D_NETWORK_NAME}
+    restart: unless-stopped
+    secrets:
+      - portainer_password
+
   nginx:
       container_name: nginx
       build:
@@ -158,6 +178,8 @@ services:
         cadvisor:
           condition: service_started
         node:
+          condition: service_started
+        portainer:
           condition: service_started
       volumes:
         - WordPress:/var/www/html
@@ -190,6 +212,7 @@ services:
     networks:
       - ${D_NETWORK_NAME}
     restart: unless-stopped
+    stop_grace_period: 1s
 
 volumes:
   DB:
@@ -219,6 +242,8 @@ volumes:
       type: none
       device: ${HOME}/data/backups
       o: bind
+  portainer_data:
+    driver: local
 
 networks:
   inception_net:
@@ -243,3 +268,5 @@ secrets:
     file: ../secrets/inception.crt
   inception_key:
     file: ../secrets/inception.key
+  portainer_password:
+    file: ../secrets/portainer_password.txt
