@@ -23,5 +23,3 @@ RUN chmod +x /portainer_init.sh
 EXPOSE 9443
 
 ENTRYPOINT ["/portainer_init.sh"]
-
-CMD ["/usr/local/bin/portainer", "--bind=:9443", "--data=/data"]
