@@ -7,9 +7,9 @@ RUN apt-get update && apt-get install -y \
     && echo "deb https://packages.sury.org/php/ bookworm main" > /etc/apt/sources.list.d/php.list \
     && apt-get update
 
-# PHP-FPMとMySQL拡張のみインストール
+# PHP-FPMとMySQL拡張、gosuをインストール
 RUN apt-get install -y \
-    php8.4-fpm php8.4-cli php8.4-mysql php8.4-mbstring php8.4-xml \
+    php8.4-fpm php8.4-cli php8.4-mysql php8.4-mbstring php8.4-xml gosu \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -30,4 +30,4 @@ EXPOSE 9001
 
 ENTRYPOINT ["/init_adminer.sh"]
 
-CMD ["php-fpm8.4", "-F"]
+CMD ["gosu", "www-data", "php-fpm8.4", "-F"]
