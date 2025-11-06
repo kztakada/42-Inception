@@ -20,7 +20,7 @@ RUN mkdir -p /var/www/adminer \
     && chown -R www-data:www-data /var/www/adminer
 
 # PHP-FPMの設定
-COPY ./tools/adminer.conf /etc/php/8.4/fpm/pool.d/adminer.conf
+COPY ./conf/adminer.conf /etc/php/8.4/fpm/pool.d/adminer.conf
 RUN mkdir -p /run/php
 
 COPY ./tools/init_adminer.sh /init_adminer.sh

@@ -5,7 +5,7 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-COPY tools/vsftpd.conf /etc/vsftpd.conf
+COPY conf/vsftpd.conf /etc/vsftpd.conf
 COPY tools/init_vsftpd.sh /init_vsftpd.sh
 RUN chmod +x /init_vsftpd.sh
 

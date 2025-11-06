@@ -6,7 +6,7 @@ RUN apt-get update && apt-get install -y \
 	&& rm -rf /var/lib/apt/lists/*
 
 # Redis設定ファイルをコピー
-COPY ./tools/redis.conf /etc/redis/redis.conf
+COPY ./conf/redis.conf /etc/redis/redis.conf
 
 # 初期化スクリプトをコピー
 COPY ./tools/init_redis.sh /init_redis.sh
