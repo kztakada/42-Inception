@@ -30,7 +30,7 @@ RUN curl -o /usr/local/bin/wp https://raw.githubusercontent.com/wp-cli/builds/gh
 	&& chmod +x /usr/local/bin/wp \
 	&& chown root:root /usr/local/bin/wp
 
-COPY ./tools/www.conf /etc/php/8.4/fpm/pool.d/www.conf
+COPY ./conf/www.conf /etc/php/8.4/fpm/pool.d/www.conf
 
 RUN mkdir -p /run/php
 

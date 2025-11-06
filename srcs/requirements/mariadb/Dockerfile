@@ -11,7 +11,7 @@ RUN mkdir -p /var/run/mysqld /var/lib/mysql \
     && chmod -R 755 /var/run/mysqld /var/lib/mysql
 
 COPY ./tools/init_db.sh /init_db.sh
-COPY ./tools/my-custom-settings.cnf /etc/mysql/mariadb.conf.d/zz-my-custom-settings.cnf
+COPY ./conf/my-custom-settings.cnf /etc/mysql/mariadb.conf.d/zz-my-custom-settings.cnf
 COPY ./tools/init.sql /etc/mysql/init.sql
 
 RUN chmod +x /init_db.sh
