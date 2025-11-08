@@ -92,7 +92,7 @@ services:
     restart: unless-stopped
     secrets:
       - vsftpd_password
-    stop_grace_period: 1s
+    stop_grace_period: 3s
 
   adminer:
     container_name: adminer
@@ -212,7 +212,7 @@ services:
     networks:
       - ${D_NETWORK_NAME}
     restart: unless-stopped
-    stop_grace_period: 1s
+    stop_grace_period: 3s
 
 volumes:
   DB:

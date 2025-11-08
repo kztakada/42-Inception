@@ -2,7 +2,7 @@ FROM debian:bookworm
 
 # 基本パッケージのインストール
 RUN apt-get update && apt-get install -y \
-	curl wget gnupg2 lsb-release ca-certificates apt-transport-https gosu \
+	curl wget gnupg2 ca-certificates apt-transport-https gosu \
 	&& apt-get clean
 
 # PHP 8.4のリポジトリを追加
@@ -26,15 +26,19 @@ RUN apt-get install -y \
 	&& apt-get clean \
 	&& rm -rf /var/lib/apt/lists/*
 
+# 必要なディレクトリを作成し、権限を設定
 RUN mkdir -p /var/www/html \
 	&& chown -R www-data:www-data /var/www/html
 
+# WP-CLIのインストールと権限設定
 RUN curl -o /usr/local/bin/wp https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar \
 	&& chmod +x /usr/local/bin/wp \
 	&& chown root:root /usr/local/bin/wp
 
+# PHP-FPMの設定ファイルをコピー	
 COPY ./conf/www.conf /etc/php/8.4/fpm/pool.d/www.conf
 
+# PHP-FPM用のランタイムディレクトリを作成
 RUN mkdir -p /run/php
 
 # カスタムテーマがある場合はここでコピー

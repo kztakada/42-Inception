@@ -1,12 +1,13 @@
+NAME = inception
 D_COMPOSE_FILE = ./srcs/docker-compose.yml
 D_COMPOSE_CMD = docker compose -f $(D_COMPOSE_FILE)
 MAKE_CREDENTIALS = ./srcs/requirements/tools/make_credentials.sh
 ENV_FILE = ./srcs/.env
 INCEPTION_ENV = $(HOME)/Inception/.env
 
-all: build
+all: $(NAME)
 
-build: $(ENV_FILE)
+$(NAME): $(ENV_FILE)
 	mkdir -p $(HOME)/data/DB $(HOME)/data/WordPress $(HOME)/data/backups
 	chmod +x $(MAKE_CREDENTIALS) && $(MAKE_CREDENTIALS)
 	$(D_COMPOSE_CMD) up --build -d
@@ -33,7 +34,7 @@ fclean: clean
 sys_clean:
 	docker system prune -a --volumes -f
 
-re: fclean build
+re: fclean all
 
 $(ENV_FILE):
 	@echo "📝 .env file not found. Attempting to copy from template..."
@@ -61,4 +62,4 @@ backup-list:
 backup-clean:
 	docker exec backup sh -c "find /backup -name "*.tar.gz" -type f -mtime +7 -delete"
 
-.PHONY: all build kill stop down clean fclean re sys_clean backup backup-logs backup-list backup-clean
+.PHONY: $(NAME) all kill stop down clean fclean re sys_clean backup backup-logs backup-list backup-clean

@@ -16,7 +16,6 @@ log() {
 RETENTION_DAYS=${BACKUP_RETENTION_DAYS:-7}
 
 log "========== Backup Started =========="
-log "Running as user: $(whoami) (UID: $(id -u))"
 
 # 1. MariaDB のバックアップ
 if [ -d "/source/db" ]; then
@@ -28,8 +27,6 @@ if [ -d "/source/db" ]; then
         -C /source db/ 2>> "$LOG_FILE"
     
     log "MariaDB backup completed: db_${TIMESTAMP}.tar.gz"
-else
-    log "WARNING: /source/db not found, skipping MariaDB backup"
 fi
 
 # 2. WordPress のバックアップ
@@ -42,9 +39,8 @@ if [ -d "/source/wordpress" ]; then
         -C /source wordpress/ 2>> "$LOG_FILE"
     
     log "WordPress backup completed: wordpress_${TIMESTAMP}.tar.gz"
-else
-    log "WARNING: /source/wordpress not found, skipping WordPress backup"
 fi
+
 
 # 3. 古いバックアップの削除
 log "Cleaning up old backups (older than ${RETENTION_DAYS} days)..."
@@ -52,11 +48,11 @@ find "$BACKUP_ROOT" -name "*.tar.gz" -type f -mtime +${RETENTION_DAYS} -delete 2
 find "$BACKUP_ROOT/logs" -name "*.log" -type f -mtime +${RETENTION_DAYS} -delete 2>> "$LOG_FILE"
 
 # バックアップサイズの計算
-TOTAL_SIZE=$(du -sh "$BACKUP_ROOT" 2>/dev/null | cut -f1 || echo "unknown")
+TOTAL_SIZE=$(du -sh "$BACKUP_ROOT" | cut -f1)
 log "Total backup size: $TOTAL_SIZE"
 
 log "========== Backup Completed =========="
 
 # バックアップ結果のサマリー
 log "Backup files created:"
-find "$BACKUP_ROOT" -name "*_${TIMESTAMP}.tar.gz" -type f -exec ls -lh {} \; 2>/dev/null | tee -a "$LOG_FILE" || true
+find "$BACKUP_ROOT" -name "*_${TIMESTAMP}.tar.gz" -type f -exec ls -lh {} \; | tee -a "$LOG_FILE"
