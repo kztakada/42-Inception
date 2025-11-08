@@ -2,7 +2,7 @@ FROM debian:bookworm
 
 # PHP 8.4のリポジトリを追加
 RUN apt-get update && apt-get install -y \
-    wget gnupg2 lsb-release ca-certificates apt-transport-https \
+    wget gnupg2 ca-certificates apt-transport-https \
     && wget -qO /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg \
     && echo "deb https://packages.sury.org/php/ bookworm main" > /etc/apt/sources.list.d/php.list \
     && apt-get update

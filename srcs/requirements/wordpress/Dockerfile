@@ -1,19 +1,16 @@
 FROM debian:bookworm
 
-# 基本パッケージのインストール
-RUN apt-get update && apt-get install -y \
-	curl wget gnupg2 ca-certificates apt-transport-https gosu \
-	&& apt-get clean
-
 # PHP 8.4のリポジトリを追加
-RUN wget -qO /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg \
-	&& echo "deb https://packages.sury.org/php/ bookworm main" > /etc/apt/sources.list.d/php.list \
-	&& apt-get update
+RUN apt-get update && apt-get install -y \
+    wget gnupg2 ca-certificates apt-transport-https \
+    && wget -qO /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg \
+    && echo "deb https://packages.sury.org/php/ bookworm main" > /etc/apt/sources.list.d/php.list \
+    && apt-get update
 
 # PHP 8.4の基本パッケージをインストール
 RUN apt-get install -y \
-	php8.4 php8.4-fpm php8.4-cli php8.4-mysql \
-	&& apt-get clean
+	php8.4 php8.4-fpm php8.4-cli php8.4-mysql curl gosu \
+	&& apt-get clean 
 
 # PHP 8.4の追加拡張をインストール
 RUN apt-get install -y \
@@ -22,9 +19,9 @@ RUN apt-get install -y \
 	php8.4-redis \
 	mariadb-client \
 	redis-tools \
-    netcat-openbsd \
 	&& apt-get clean \
 	&& rm -rf /var/lib/apt/lists/*
+
 
 # 必要なディレクトリを作成し、権限を設定
 RUN mkdir -p /var/www/html \
